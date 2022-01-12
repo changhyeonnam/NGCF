@@ -162,7 +162,6 @@ class MovieLens(Dataset):
         # negative feedback dataset ratio
         for u, i in user_item_set:
             # positive instance
-            users.append(u)
             item = []
             item.append(i)
             # negative instance
