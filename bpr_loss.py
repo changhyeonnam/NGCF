@@ -15,13 +15,7 @@ class BPR_Loss(nn.Module):
         pos_scores = torch.mul(users,pos_items).sum(dim=1)
         neg_scores =  torch.mul(users,neg_items).sum(dim=1)
 
-        log_prob = nn.LogSigmoid()(pos_scores - neg_scores)
-
-        regularization  = self.decay*(users.norm(dim=1).pow(2).sum()
-                       +  pos_items.norm(dim=1).pow(2).sum()
-                       + neg_items.norm(dim=1).pow(2).sum())
-
-        return -log_prob + regularization
+        return pos_scores, neg_scores
 
 
     def __call__(self,*args):

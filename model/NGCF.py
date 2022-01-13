@@ -13,6 +13,7 @@ class NGCF(nn.Module):
                   embed_size: int,
                   node_dropout_ratio: float,
                   layer_size: int,
+                  device,
                   train: bool = True,
                   mess_dropout= [0.1, 0.1, 0.1],
                   ) -> object:
@@ -37,8 +38,8 @@ class NGCF(nn.Module):
         self._init_weight()
 
         # convert coordinate representation to sparse matrix
-        self.norm_laplacian = self._covert_mat2tensor(norm_laplacian)
-        self.eye_matrix = self._covert_mat2tensor(eye_matrix)
+        self.norm_laplacian = self._covert_mat2tensor(norm_laplacian).to(device)
+        self.eye_matrix = self._covert_mat2tensor(eye_matrix).to(device)
 
     def _init_weight(self):
         nn.init.xavier_uniform(self.embedding_user.weight)
