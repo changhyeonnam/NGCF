@@ -28,4 +28,15 @@ class Laplacian():
         adj_mat = adj_mat.todok()
         return adj_mat
 
-    def create_laplace_matrix(self):
+    def create_norm_laplacian(self):
+        adj_mat = self.adj_mat
+        rowsum = np.array(adj_mat.sum(axis=1)) # axis =1 -> sum the rows, axis=0 -> sum the columns
+        deg_inverse = np.power(rowsum,-0.5).flatten()
+        deg_inverse[np.isinf(deg_inverse)] = 0. # check if sqrt(-1) exits
+        deg_inverse_mat = sp.diags(deg_inverse)
+        norm_laplacian = deg_inverse_mat.dot(adj_mat).dot(deg_inverse_mat)
+        return norm_laplacian.tocoo().tocsr()
+
+
+
+

@@ -14,5 +14,6 @@ total_df , train_df, test_df = dataset.split_train_test()
 train_set = MovieLens(train_df,total_df,train=True)
 test_set = MovieLens(test_df,total_df,train=False)
 
-laplacian = Laplacian(df=total_df)
-print(laplacian.create_interaction_matrix())
+matrix_generator = Laplacian(df=total_df)
+norm_laplacian  = matrix_generator.create_norm_laplacian()
+print(norm_laplacian)
