@@ -59,11 +59,6 @@ class NGCF(nn.Module):
         output = torch.sparse.FloatTensor(indices,values,self.norm_laplacian.shape)
         return output * (1./(1-rate))
 
-    def _sparse_eye(self,mat):
-        indices = mat._indices()
-        values = torch.tensor(1.0)
-
-
     def _covert_mat2tensor(self,mat):
         mat = mat.tocoo()
         indices = torch.LongTensor([mat.row,mat.col])
