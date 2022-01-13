@@ -35,7 +35,12 @@ class Laplacian():
         deg_inverse[np.isinf(deg_inverse)] = 0. # check if sqrt(-1) exits
         deg_inverse_mat = sp.diags(deg_inverse)
         norm_laplacian = deg_inverse_mat.dot(adj_mat).dot(deg_inverse_mat)
-        return norm_laplacian.tocoo().tocsr()
+
+        eye_matrix = sp.eye(self.n_users+self.n_items)
+        eye_matrix = eye_matrix.tocoo()
+        # tocsr contains only row index for non-zero value
+        # tocoo contains row,column for non-zero value
+        return eye_matrix,norm_laplacian.tocoo()
 
 
 
