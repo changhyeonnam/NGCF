@@ -77,7 +77,7 @@ class NGCF(nn.Module):
         else:
             norm_laplacian = self.norm_laplacian
 
-        print(f'norm_laplacian:{norm_laplacian.shape}')
+        # print(f'norm_laplacian:{norm_laplacian.shape}')
 
 
         # identity matrix
@@ -86,12 +86,12 @@ class NGCF(nn.Module):
         # make coordinate format
         # norm_laplacian_add_eye = norm_laplacian_add_eye.to_sparse()
 
-        print(f'norm_laplacian_add_eye:{norm_laplacian_add_eye.shape}')
+        # print(f'norm_laplacian_add_eye:{norm_laplacian_add_eye.shape}')
 
         prev_embedding= torch.cat((self.embedding_user.weight,
                                     self.embedding_item.weight),dim=0)
 
-        print(f'prev_embedding:{prev_embedding.shape}')
+        # print(f'prev_embedding:{prev_embedding.shape}')
 
         all_embedding=[prev_embedding]
 
@@ -103,7 +103,7 @@ class NGCF(nn.Module):
             # first_term = first_embedding * i-th layer of W_1
             first_term = torch.matmul(first_term,l1.weight)+l1.bias
 
-            print(f'first_term:{first_term.shape}')
+            # print(f'first_term:{first_term.shape}')
 
             # second_term = laplacian * elementwise of previous embedding
             second_term = prev_embedding * prev_embedding
@@ -112,7 +112,7 @@ class NGCF(nn.Module):
             # second_term = second_embedding * i-th layer of W2
             second_term = torch.matmul(second_term,l2.weight)+l2.bias
 
-            print(f'second_term:{second_term.shape}')
+            # print(f'second_term:{second_term.shape}')
 
             # prev_embedding = LeakyReLU(first_term + second_term)
             prev_embedding = nn.LeakyReLU(negative_slope=0.2)(first_term+second_term)
@@ -123,32 +123,45 @@ class NGCF(nn.Module):
             # L2 normalize
             prev_embedding = F.normalize(prev_embedding,p=2,dim=1)
 
-            print(f'prev_embedding:{prev_embedding.shape}')
+            # print(f'prev_embedding:{prev_embedding.shape}')
 
             all_embedding+=[prev_embedding]
 
         all_embedding = torch.cat(all_embedding,1)
 
-        print(f'all_embedding:{all_embedding.shape}')
-        all_embedding = all_embedding.view([-1,all_embedding.shape[0],all_embedding.shape[1]])
-        print(f'change:{all_embedding.shape}')
+        # print(f'all_embedding:{all_embedding.shape}')
+        x = all_embedding.shape[0]
+        y  = all_embedding.shape[1]
+        all_embedding.unsqueeze(-1)
+        all_embedding  = all_embedding.expand(len(users),x,y)
 
-        user_embeddings = all_embedding[:,self.num_users,:]
-        print(f'user_embeddings:{user_embeddings.shape}')
+        # print(f'change:{all_embedding.shape}')
 
-        # print(users.item())
+        user_embeddings = all_embedding[:,:self.num_users,:]
+        # print(f'user_embeddings:{user_embeddings.shape}')
+        # print(f'one user_embeddings:{user_embeddings[0,users[0],:].shape}')
 
-        user_embeddings = user_embeddings[:,:users.item(),:]
+        item_embeddings = all_embedding[:,self.num_users:,:]
+        # print(f'item_embeddings:{item_embeddings.shape}')
+        # print(f'one item_embeddings:{item_embeddings[0].shape}')
 
-        item_embeddings = all_embedding[self.num_users:,:]
-        pos_item_embeddings = item_embeddings[pos_items.item(),:]
-        neg_item_embeddings = item_embeddings[neg_items.item(),:]
+        N = len(users)
+        n = item_embeddings.shape[1]
+        m = item_embeddings.shape[2]
+        users_embed = torch.empty(size=(N,m))
+        pos_item_embeddings = torch.empty(size=(N,m))
+        neg_item_embeddings = torch.empty(size=(N,m))
 
-        print(f'user_embeddings:{user_embeddings.shape},'
-              f'pos_item_embeddings:{pos_item_embeddings.shape},'
-              f'neg_item_embeddings:{neg_item_embeddings.shape}')
+        for i,(user,pos_item,neg_item) in enumerate(zip(users,pos_items,neg_items)):
+            users_embed[i]=user_embeddings[i,user,:]
+            pos_item_embeddings[i] = item_embeddings[i,pos_item, :]
+            neg_item_embeddings[i] = item_embeddings[i,neg_item, :]
 
-        return user_embeddings,pos_item_embeddings,neg_item_embeddings
+        # print(f'users_embed:{users_embed.shape}')
+        # print(f'pos_item_embeddings:{pos_item_embeddings.shape}')
+        # print(f'neg_item_embeddings:{neg_item_embeddings.shape}')
+
+        return users_embed,pos_item_embeddings,neg_item_embeddings
 
 
 

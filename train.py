@@ -24,29 +24,19 @@ class Train():
         dataloader = self.dataloader
 
         for epoch in range(epochs):
+            avg_cost = 0
             batch_size = len(dataloader)
-            loss, mf_loss, emb_loss = 0., 0., 0.
-
             for users,pos_items,neg_items in dataloader:
                 user_embeddings, pos_item_embeddings, neg_item_embeddings=\
                     model(users,pos_items,neg_items)
 
-                batch_loss, batch_mf_loss, batch_emb_loss = criterion(user_embeddings,
-                                                                      pos_item_embeddings,
-                                                                      neg_item_embeddings)
                 optimizer.zero_grad()
-                batch_loss.backward()
+                cost = criterion(user_embeddings,pos_item_embeddings,neg_item_embeddings)
+                cost.mean().backward()
                 optimizer.step()
+                avg_cost += cost.item() / total_batch
+            print(f'Epoch: {(epoch + 1):04}, {criterion._get_name()}= {avg_cost:.9f}')
 
-                loss += batch_loss
-                mf_loss += batch_mf_loss
-                emb_loss += batch_emb_loss
 
-            if (epoch + 1) % 10 != 0:
-                if args.verbose > 0 and epoch % args.verbose == 0:
-                    perf_str = 'Epoch %d [%.1fs]: train==[%.5f=%.5f + %.5f]' % (
-                        epoch, time() - t1, loss, mf_loss, emb_loss)
-                    print(perf_str)
-                continue
 
 
