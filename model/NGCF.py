@@ -70,12 +70,17 @@ class NGCF(nn.Module):
         norm_laplacian = self._node_dropout(self.node_dropout_ratio if self.train
                                             else self.norm_laplacian)
         eye_mat=torch.eye(self.num_users+self.num_items)
+        norm_laplacian_add_eye = norm_laplacian.to_dense()+eye_mat
+        # make coordinate format
+        norm_laplacian_add_eye = norm_laplacian_add_eye.to_sparse()
         embedding_zero = torch.cat((self.embedding_user.weight,
                                     self.embedding_item.weight),dim=0)
         all_embedding=[]
         all_embedding.append(embedding_zero)
 
+
         for index in range(self.layer_size):
+
 
 
 

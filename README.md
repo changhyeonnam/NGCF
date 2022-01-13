@@ -1,0 +1,4 @@
+# NGCF
+Neural Graph Collaborative Filtering with MovieLens in pytorch
+
+[NGCF](https://www.google.com/search?q=Neural+Graph+Collaborative+&sxsrf=AOaemvLogovcQu_oHmq_X6N2Qb35ePkbCA%3A1641977759881&ei=n5feYauaNZ7f2roP_JunuA8&ved=0ahUKEwjr5ezo66v1AhWer1YBHfzNCfcQ4dUDCA4&uact=5&oq=Neural+Graph+Collaborative+&gs_lcp=Cgdnd3Mtd2l6EAMyBAgjECcyBAgjECcyBQgAEMsBMgUIABDLATIFCAAQywEyBAgAEB4yBAgAEB4yBggAEAgQHjIECAAQHjIGCAAQCBAeSgQIQRgASgQIRhgAUABYAGCMAmgAcAJ4AIABdYgBdZIBAzAuMZgBAKABAcABAQ&sclient=gws-wiz) implementation with dataset MovieLens
