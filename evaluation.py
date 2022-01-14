@@ -7,7 +7,7 @@ class Evaluation():
                  test_dataloader,
                  model,
                  device,
-                 top_k:int=5,
+                 top_k:int=20,
                  ):
         self.dataloader = test_dataloader
         self.model = model
@@ -30,9 +30,6 @@ class Evaluation():
         with torch.no_grad():
             for users,pos_items in self.dataloader:
                 users,pos_items = users.to(device),pos_items.to(device)
-
-                users=torch.flatten(users,start_dim=0)
-                pos_items=torch.flatten(pos_items,start_dim=0)
 
                 user_embeddings, pos_item_embeddings,_ = self.model(users=users,
                                                              pos_items=pos_items,

@@ -112,7 +112,8 @@ class MovieLens(Dataset):
     def __init__(self,
                  df: pd.DataFrame,
                  total_df: pd.DataFrame,
-                 train:bool=False
+                 ng_ratio: int,
+                 train:bool=False,
                  )->None:
         '''
         :param root: dir for download and train,test.
@@ -124,6 +125,7 @@ class MovieLens(Dataset):
         self.df = df
         self.total_df = total_df
         self.train = train
+        self.ng_ratio = ng_ratio
         if self.train:
             self.users, self.items = self._negative_sampling()
 
@@ -150,9 +152,7 @@ class MovieLens(Dataset):
         if self.train:
             return self.users[index], self.items[index][0], self.items[index][1]
         else:
-            user = torch.LongTensor([self.df.userId.values[index]])
-            item = torch.LongTensor([self.df.movieId.values[index]])
-            return user,item
+            return self.users[index], self.items[index]
 
 
     def _negative_sampling(self) :
@@ -169,17 +169,24 @@ class MovieLens(Dataset):
         # negative feedback dataset ratio
         for u, i in user_item_set:
             # positive instance
+            visit = []
             item = []
             item.append(i)
-            # negative instance
-            if self.train :
+            for k in range(self.ng_ratio):
+                # negative instance
                 negative_item = np.random.choice(all_movieIds)
                 # check if item and user has interaction, if true then set new value from random
-                while (u, negative_item) in total_user_item_set:
+                while (u, negative_item) in total_user_item_set or negative_item not in visit:
                     negative_item = np.random.choice(all_movieIds)
                 item.append(negative_item)
-            items.append(item)
-            users.append(u)
+                visit.append(negative_item)
+            if self.train:
+                items.append(item)
+                users.append(u)
+            else:
+                for it in item:
+                    items.append(it)
+                    users.append(u)
         print(f"sampled data: {len(items)}")
         return torch.tensor(users), torch.tensor(items)
 

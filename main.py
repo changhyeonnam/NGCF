@@ -20,8 +20,8 @@ dataset = Download(root=root_path,file_size='100k',download=False)
 total_df , train_df, test_df = dataset.split_train_test()
 
 num_user, num_item = total_df['userId'].max()+1, total_df['movieId'].max()+1
-train_set = MovieLens(train_df,total_df,train=True)
-test_set = MovieLens(test_df,total_df,train=False)
+train_set = MovieLens(df=train_df,total_df=total_df,train=True,ng_ratio=1)
+test_set = MovieLens(df=test_df,total_df=total_df,train=False,ng_ratio=99)
 
 matrix_generator = Laplacian(df=total_df)
 eye_matrix,norm_laplacian  = matrix_generator.create_norm_laplacian()
@@ -30,7 +30,7 @@ train_loader = DataLoader(train_set,
                           batch_size=256,
                           shuffle=True)
 test_loader = DataLoader(test_set,
-                         batch_size=19,
+                         batch_size=100,
                          shuffle=False)
 
 model = NGCF(norm_laplacian=norm_laplacian,
@@ -65,7 +65,7 @@ if __name__ =='__main__' :
 
     eval = Evaluation(test_dataloader=test_loader,
                       model=model,
-                      top_k=10,
+                      top_k=20,
                       device=device)
 
     end_time = datetime.now()
