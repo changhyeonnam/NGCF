@@ -25,7 +25,7 @@ class Train():
         optimizer  = self.optimizer
         dataloader = self.dataloader
         device = self.device
-        top_k = 5
+        top_k = 10
         for epoch in range(epochs):
             avg_cost = 0
             total_batch = len(dataloader)

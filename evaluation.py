@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import numpy as np
+import math
 class Evaluation():
     def __init__(self,
                  test_dataloader,
@@ -15,13 +16,14 @@ class Evaluation():
     def dcg(self,gt_items):
         dcg=[]
         for idx,item in enumerate(gt_items):
-            dcg.append(item/np.log2(idx+1))
+            dcg.append(pow(2,item)/math.log(idx+2,2))
         return np.sum(dcg)
 
     def Ndcg(self,gt_items, pred_items):
         IDCG = self.dcg(gt_items)
         DCG = self.dcg(pred_items)
-        return DCG/IDCG
+        output = DCG/IDCG
+        return output
 
     def get_metric(self):
         NDCG=[]
@@ -56,5 +58,7 @@ class Evaluation():
                 
                 ground_truth = torch.take(
                     trained_matrix[users[0]],gt_indices).cpu().numpy().tolist()
+                
                 NDCG.append(self.Ndcg(gt_items=ground_truth,pred_items=recommends))
+                
         return np.mean(NDCG)

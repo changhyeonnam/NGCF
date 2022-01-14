@@ -30,7 +30,7 @@ train_loader = DataLoader(train_set,
                           batch_size=256,
                           shuffle=True)
 test_loader = DataLoader(test_set,
-                         batch_size=10,
+                         batch_size=19,
                          shuffle=False)
 
 model = NGCF(norm_laplacian=norm_laplacian,
@@ -48,7 +48,6 @@ model.to(device)
 criterion = BPR_Loss(batch_size=256,decay_ratio=1e-5)
 optimizer = torch.optim.Adam(model.parameters(),lr=1e-3)
 
-NDCG = eval.get_metric()
 
 if __name__ =='__main__' :
     start_time = datetime.now()
@@ -66,7 +65,7 @@ if __name__ =='__main__' :
 
     eval = Evaluation(test_dataloader=test_loader,
                       model=model,
-                      top_k=5,
+                      top_k=10,
                       device=device)
 
     end_time = datetime.now()
