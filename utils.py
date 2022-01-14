@@ -90,7 +90,7 @@ class Download():
         '''
         train_dataframe = self.df
         test_dataframe = None
-        for i in range(19):
+        for i in range(1):
             tmp_dataframe = train_dataframe.sample(frac=1).drop_duplicates(['userId'])
             test_dataframe = pd.concat([tmp_dataframe,test_dataframe])
             tmp_dataframe2 = pd.concat([train_dataframe, tmp_dataframe])

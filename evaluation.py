@@ -14,10 +14,8 @@ class Evaluation():
         self.top_k = top_k
         self.device = device
     def dcg(self,gt_items):
-        dcg=[]
-        for idx,item in enumerate(gt_items):
-            dcg.append(pow(2,item)/math.log(idx+2,2))
-        return np.sum(dcg)
+        output = np.sum(gt_items)/np.log2(np.arange(2,len(gt_items)+1))
+        return output 
 
     def Ndcg(self,gt_items, pred_items):
         IDCG = self.dcg(gt_items)
