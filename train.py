@@ -17,9 +17,9 @@ class Train():
         self.optimizer = optim
         self.dataloader = train_loader
         self.test_loader = test_loader
+
     def train(self):
         epochs = self.epochs
-        device = self.device
         model = self.model
         criterion = self.criterion
         optimizer  = self.optimizer

@@ -127,8 +127,7 @@ class MovieLens(Dataset):
         self.train = train
         self.ng_ratio = ng_ratio
         self.users, self.items = self._negative_sampling()
-
-
+        print(f'len items:{self.items.shape}')
 
     def __len__(self) -> int:
         '''
@@ -175,24 +174,26 @@ class MovieLens(Dataset):
                 users.append(u)
             else:
                 item.append(i)
+
             for k in range(self.ng_ratio):
                 # negative instance
                 negative_item = np.random.choice(all_movieIds)
                 # check if item and user has interaction, if true then set new value from random
                 while (u, negative_item) in total_user_item_set or negative_item in visit:
                     negative_item = np.random.choice(all_movieIds)
-                item.append(negative_item)
-                visit.append(negative_item)
 
-                if not self.train:
+                if self.train:
+                    item.append(negative_item)
+                    visit.append(negative_item)
+                else:
                     items.append(negative_item)
+                    visit.append(negative_item)
                     users.append(u)
 
             if self.train:
                 items.append(item)
                 users.append(u)
 
-        print(f"sampled data: {len(items)}")
         return torch.tensor(users), torch.tensor(items)
 
 

@@ -29,6 +29,7 @@ eye_matrix,norm_laplacian  = matrix_generator.create_norm_laplacian()
 train_loader = DataLoader(train_set,
                           batch_size=256,
                           shuffle=True)
+
 test_loader = DataLoader(test_set,
                          batch_size=100,
                          shuffle=False)
