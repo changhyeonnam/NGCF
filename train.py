@@ -27,7 +27,7 @@ class Train():
 
         for epoch in range(epochs):
             avg_cost = 0
-            batch_size = len(dataloader)
+            total_batch = len(dataloader)
 
             for idx,(users,pos_items,neg_items) in enumerate(dataloader):
                 users,pos_items,neg_items = users.to(device),pos_items.to(device),neg_items.to(device)
@@ -38,7 +38,7 @@ class Train():
                 cost.backward()
                 optimizer.step()
                 avg_cost+=cost
-            avg_cost = loss/batch_size
+            avg_cost = loss/total_batch
             print(f'Epoch: {(epoch + 1):04}, {criterion._get_name()}= {avg_cost:.9f}')
 
 
