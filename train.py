@@ -42,7 +42,8 @@ class Train():
             avg_cost = avg_cost/total_batch
             eval = Evaluation(test_dataloader=self.test_loader,
                               model = model,
-                              top_k=top_k)
+                              top_k=top_k,
+                              device=device)
             NDCG = eval.get_metric()
             print(f'Epoch: {(epoch + 1):04}, {criterion._get_name()}= {avg_cost:.9f}, NDCG@{top_k}:{NDCG:.4f}')
 

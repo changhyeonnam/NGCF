@@ -5,11 +5,13 @@ class Evaluation():
     def __init__(self,
                  test_dataloader,
                  model,
-                 top_k:int=5):
+                 device,
+                 top_k:int=5,
+                 ):
         self.dataloader = test_dataloader
         self.model = model
         self.top_k = top_k
-
+        self.device = device
     def dcg(self,gt_items):
         dcg=[]
         for idx,item in enumerate(gt_items):
@@ -23,9 +25,11 @@ class Evaluation():
 
     def get_metric(self):
         NDCG=[]
+        device = self.device
         self.model.eval()
         with torch.no_grad():
             for users,pos_items in self.dataloader:
+                users,pos_items = users.to(device),pos_items.to(device)
                 user_embeddings, pos_item_embeddings,_ = self.model(users=users,
                                                              pos_items=pos_items,
                                                              neg_items=[],
