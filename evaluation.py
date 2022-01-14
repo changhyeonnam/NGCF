@@ -23,25 +23,26 @@ class Evaluation():
 
     def get_metric(self):
         NDCG=[]
-        for users,pos_items in self.dataloader:
-            user_embeddings, pos_item_embeddings,_ = self.model(users=users,
-                                                         pos_items=pos_items,
-                                                         neg_items=[],
-                                                         user_dropout=False)
-            all_user_embeddings, all_items_embeddings = self.model.user_embeddings,self.model.item_embeddings
-            trained_matrix = torch.matmul(all_user_embeddings,
-                                      torch.transpose(all_items_embeddings,2,1))
+        self.model.eval()
+        with torch.no_grad():
+            for users,pos_items in self.dataloader:
+                user_embeddings, pos_item_embeddings,_ = self.model(users=users,
+                                                             pos_items=pos_items,
+                                                             neg_items=[],
+                                                             use_dropout=False)
+                all_user_embeddings, all_items_embeddings = self.model.user_embeddings,self.model.item_embeddings
+                trained_matrix = torch.matmul(all_user_embeddings,
+                                          torch.transpose(all_items_embeddings,2,1))
 
-            _, pred_indices = torch.topk(pos_item_embeddings, self.top_k)
+                _, pred_indices = torch.topk(pos_item_embeddings, self.top_k)
 
-            recommends = torch.take(
-                pos_items, pred_indices).cpu().numpy().tolist()
+                recommends = torch.take(
+                    pos_items, pred_indices).cpu().numpy().tolist()
 
-            _,gt_indices=torch.topk(trained_matrix[user_embeddings,:],self.top_k)
+                _,gt_indices=torch.topk(trained_matrix[user_embeddings,:],self.top_k)
 
-            ground_truth = torch.take(
-                trained_matrix[user_embeddings],gt_indices).cpu().numpy().tolist()
+                ground_truth = torch.take(
+                    trained_matrix[user_embeddings],gt_indices).cpu().numpy().tolist()
 
-            NDCG.append(self.Ndcg(gt_items=ground_truth,pred_items=recommends))
-
+                NDCG.append(self.Ndcg(gt_items=ground_truth,pred_items=recommends))
         return np.mean(NDCG)
