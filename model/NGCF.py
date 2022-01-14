@@ -162,9 +162,9 @@ class NGCF(nn.Module):
         pos_item_embeddings = item_embeddings[pos_items, :]
         neg_item_embeddings = item_embeddings[neg_items, :]
 
-        print(f'users_embed:{users_embed.shape}')
-        print(f'pos_item_embeddings:{pos_item_embeddings.shape}')
-        print(f'neg_item_embeddings:{neg_item_embeddings.shape}')
+        # print(f'users_embed:{users_embed.shape}')
+        # print(f'pos_item_embeddings:{pos_item_embeddings.shape}')
+        # print(f'neg_item_embeddings:{neg_item_embeddings.shape}')
 
         return users_embed,pos_item_embeddings,neg_item_embeddings
 

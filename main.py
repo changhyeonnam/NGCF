@@ -26,10 +26,10 @@ matrix_generator = Laplacian(df=total_df)
 eye_matrix,norm_laplacian  = matrix_generator.create_norm_laplacian()
 
 train_loader = DataLoader(train_set,
-                          batch_size=32,
+                          batch_size=256,
                           shuffle=True)
 test_loader = DataLoader(test_set,
-                         batch_size=32,
+                         batch_size=256,
                          shuffle=True)
 
 model = NGCF(norm_laplacian=norm_laplacian,
@@ -45,7 +45,7 @@ model = NGCF(norm_laplacian=norm_laplacian,
              )
 
 model.to(device)
-criterion = BPR_Loss(batch_size=32,decay_ratio=1e-5)
+criterion = BPR_Loss(batch_size=256,decay_ratio=1e-5)
 optimizer = torch.optim.Adam(model.parameters(),lr=1e-3)
 
 if __name__ =='__main__' :
