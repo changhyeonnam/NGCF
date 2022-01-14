@@ -134,7 +134,7 @@ class MovieLens(Dataset):
         get lenght of data
         :return: len(data)
         '''
-        return len(self.df)
+        return len(self.users)
 
 
     def __getitem__(self, index):
