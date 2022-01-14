@@ -34,16 +34,24 @@ class Evaluation():
                                                              pos_items=pos_items,
                                                              neg_items=[],
                                                              use_dropout=False)
+
+                print(f'user_embeddings: {user_embeddings.shape}')
+                print(f'pos_item_embeddings: {pos_item_embeddings.shape}')
+
                 all_user_embeddings, all_items_embeddings = self.model.user_embeddings,self.model.item_embeddings
+                print(f'all_user_embeddings: {all_user_embeddings.shape}')
+                print(f'all_items_embeddings: {all_items_embeddings.shape}')
+
                 trained_matrix = torch.matmul(all_user_embeddings,
                                           torch.transpose(all_items_embeddings,0,1))
+                print(f'trained_matrix: {trained_matrix.shape}')
 
                 _, pred_indices = torch.topk(pos_item_embeddings, self.top_k)
 
                 recommends = torch.take(
-                    pos_items, pred_indices).cpu().numpy().tolist()
+                    pos_item_embeddings, pred_indices).cpu().numpy().tolist()
 
-                _,gt_indices=torch.topk(trained_matrix[user_embeddings],self.top_k)
+                _,gt_indices=torch.topk(trained_matrix[user_embeddings].sum(dim=1),self.top_k)
 
                 ground_truth = torch.take(
                     trained_matrix[user_embeddings],gt_indices).cpu().numpy().tolist()
