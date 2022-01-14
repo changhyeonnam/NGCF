@@ -25,7 +25,7 @@ class Train():
         optimizer  = self.optimizer
         dataloader = self.dataloader
         device = self.device
-
+        top_k = 5
         for epoch in range(epochs):
             avg_cost = 0
             total_batch = len(dataloader)
@@ -42,9 +42,9 @@ class Train():
             avg_cost = avg_cost/total_batch
             eval = Evaluation(test_dataloader=self.test_loader,
                               model = model,
-                              topk=20)
+                              top_k=top_k)
             NDCG = eval.get_metric()
-            print(f'Epoch: {(epoch + 1):04}, {criterion._get_name()}= {avg_cost:.9f}, NDCG:{NDCG:.4f}')
+            print(f'Epoch: {(epoch + 1):04}, {criterion._get_name()}= {avg_cost:.9f}, NDCG@{top_k}:{NDCG:.4f}')
 
 
 

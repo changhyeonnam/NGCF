@@ -29,7 +29,8 @@ train_loader = DataLoader(train_set,
                           batch_size=256,
                           shuffle=True)
 test_loader = DataLoader(test_set,
-                         batch_size=20,
+                         batch_size=10,
+
                          shuffle=False)
 
 model = NGCF(norm_laplacian=norm_laplacian,

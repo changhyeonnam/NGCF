@@ -5,10 +5,10 @@ class Evaluation():
     def __init__(self,
                  test_dataloader,
                  model,
-                 topk:int=5):
+                 top_k:int=5):
         self.dataloader = test_dataloader
         self.model = model
-        self.topk = topk
+        self.top_k = top_k
 
     def dcg(self,gt_items):
         dcg=[]
@@ -32,14 +32,14 @@ class Evaluation():
                                                              use_dropout=False)
                 all_user_embeddings, all_items_embeddings = self.model.user_embeddings,self.model.item_embeddings
                 trained_matrix = torch.matmul(all_user_embeddings,
-                                          torch.transpose(all_items_embeddings,2,1))
+                                          torch.transpose(all_items_embeddings,0,1))
 
                 _, pred_indices = torch.topk(pos_item_embeddings, self.top_k)
 
                 recommends = torch.take(
                     pos_items, pred_indices).cpu().numpy().tolist()
 
-                _,gt_indices=torch.topk(trained_matrix[user_embeddings,:],self.top_k)
+                _,gt_indices=torch.topk(trained_matrix[user_embeddings],self.top_k)
 
                 ground_truth = torch.take(
                     trained_matrix[user_embeddings],gt_indices).cpu().numpy().tolist()
