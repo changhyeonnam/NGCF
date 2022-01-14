@@ -103,7 +103,6 @@ class NGCF(nn.Module):
 
             # first_term = first_embedding * i-th layer of W_1
             first_term = torch.matmul(first_term,l1.weight)+l1.bias
-
             # print(f'first_term:{first_term.shape}')
 
             # second_term = laplacian * elementwise of previous embedding
@@ -112,7 +111,6 @@ class NGCF(nn.Module):
 
             # second_term = second_embedding * i-th layer of W2
             second_term = torch.matmul(second_term,l2.weight)+l2.bias
-
             # print(f'second_term:{second_term.shape}')
 
             # prev_embedding = LeakyReLU(first_term + second_term)
@@ -123,40 +121,18 @@ class NGCF(nn.Module):
 
             # L2 normalize
             prev_embedding = F.normalize(prev_embedding,p=2,dim=1)
-
             # print(f'prev_embedding:{prev_embedding.shape}')
 
             all_embedding+=[prev_embedding]
 
         all_embedding = torch.cat(all_embedding,1)
-
         # print(f'all_embedding:{all_embedding.shape}')
-        # x = all_embedding.shape[0]
-        # y  = all_embedding.shape[1]
-        # all_embedding.unsqueeze(-1)
-        # all_embedding  = all_embedding.expand(len(users),x,y)
-
-        # print(f'change:{all_embedding.shape}')
 
         user_embeddings = all_embedding[:self.num_users,:]
         # print(f'user_embeddings:{user_embeddings.shape}')
-        # print(f'one user_embeddings:{user_embeddings[0,users[0],:].shape}')
 
         item_embeddings = all_embedding[self.num_users:,:]
         # print(f'item_embeddings:{item_embeddings.shape}')
-        # print(f'one item_embeddings:{item_embeddings[0].shape}')
-
-        # N = len(users)
-        # n = item_embeddings.shape[1]
-        # m = item_embeddings.shape[2]
-        # users_embed = torch.empty(size=(N,m))
-        # pos_item_embeddings = torch.empty(size=(N,m))
-        # neg_item_embeddings = torch.empty(size=(N,m))
-        #
-        # for i,(user,pos_item,neg_item) in enumerate(zip(users,pos_items,neg_items)):
-        #     users_embed[i]=user_embeddings[i,user,:]
-        #     pos_item_embeddings[i] = item_embeddings[i,pos_item, :]
-        #     neg_item_embeddings[i] = item_embeddings[i,neg_item, :]
 
         users_embed=user_embeddings[users,:]
         pos_item_embeddings = item_embeddings[pos_items, :]
