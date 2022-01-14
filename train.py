@@ -38,7 +38,7 @@ class Train():
                 cost.backward()
                 optimizer.step()
                 avg_cost+=cost
-            avg_cost = loss/total_batch
+            avg_cost = avg_cost/total_batch
             print(f'Epoch: {(epoch + 1):04}, {criterion._get_name()}= {avg_cost:.9f}')
 
 
