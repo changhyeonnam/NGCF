@@ -22,7 +22,7 @@ class Evaluation():
         return DCG/IDCG
 
     def get_metric(self):
-        HR=[],NDCG=[]
+        NDCG=[]
         for users,pos_items in self.dataloader:
             user_embeddings, pos_item_embeddings,_ = self.model(users=users,
                                                          pos_items=pos_items,
@@ -37,7 +37,7 @@ class Evaluation():
             recommends = torch.take(
                 pos_items, pred_indices).cpu().numpy().tolist()
 
-            _,gt_indices=torch.topk(trained_matrix[user_embeddings],self.top_k)
+            _,gt_indices=torch.topk(trained_matrix[user_embeddings,:],self.top_k)
 
             ground_truth = torch.take(
                 trained_matrix[user_embeddings],gt_indices).cpu().numpy().tolist()

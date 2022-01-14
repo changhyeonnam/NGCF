@@ -35,8 +35,8 @@ class NGCF(nn.Module):
         self.layer2 = nn.Sequential(*layer_list)
         self._init_weight()
 
-        self.user_embeddings =None
-        self.item_embeddings
+        self.user_embeddings = None
+        self.item_embeddings = None
         # convert coordinate representation to sparse matrix
         self.norm_laplacian = self._covert_mat2tensor(norm_laplacian).to(device)
         self.eye_matrix = self._covert_mat2tensor(eye_matrix).to(device)

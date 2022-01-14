@@ -90,7 +90,7 @@ class Download():
         '''
         train_dataframe = self.df
         test_dataframe = None
-        for i in range(100):
+        for i in range(20):
             tmp_dataframe = train_dataframe.sample(frac=1).drop_duplicates(['userId'])
             test_dataframe = pd.concat([tmp_dataframe,test_dataframe])
             tmp_dataframe2 = pd.concat([train_dataframe, tmp_dataframe])
@@ -176,7 +176,7 @@ class MovieLens(Dataset):
                 item.append(negative_item)
             items.append(item)
             users.append(u)
-        print(f"sampled data: {len(users)}")
+        print(f"sampled data: {len(items)}")
         return torch.tensor(users), torch.tensor(items)
 
 

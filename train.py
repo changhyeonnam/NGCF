@@ -39,7 +39,7 @@ class Train():
                 cost.backward()
                 optimizer.step()
                 avg_cost+=cost
-            avg_cost = loss/total_batch
+            avg_cost = avg_cost/total_batch
             eval = Evaluation(test_dataloader=self.test_loader,
                               model = model,
                               topk=20)
