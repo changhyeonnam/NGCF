@@ -24,7 +24,7 @@ class BPR_Loss(nn.Module):
                        + torch.norm(pos_items) ** 2
                        + torch.norm(neg_items) ** 2) / 2
 
-        emb_loss = self.decay * regularizer / self.batch_size
+        emb_loss = self.decay * regularizer
 
         return mf_loss + emb_loss, mf_loss, emb_loss
 
