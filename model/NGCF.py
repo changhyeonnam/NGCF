@@ -14,7 +14,6 @@ class NGCF(nn.Module):
                   node_dropout_ratio: float,
                   layer_size: int,
                   device,
-                  train: bool = True,
                   mess_dropout= [0.1, 0.1, 0.1],
                   ) -> object:
         super(NGCF, self).__init__()
@@ -25,7 +24,6 @@ class NGCF(nn.Module):
         self.node_dropout_ratio = node_dropout_ratio
         self.mess_dropout = mess_dropout
         self.layer_size = layer_size
-        self.train = train
         self.embedding_user = nn.Embedding(self.num_users,self.embed_size)
         self.embedding_item = nn.Embedding(self.num_items,self.embed_size)
 
@@ -37,6 +35,8 @@ class NGCF(nn.Module):
         self.layer2 = nn.Sequential(*layer_list)
         self._init_weight()
 
+        self.user_embeddings =None
+        self.item_embeddings
         # convert coordinate representation to sparse matrix
         self.norm_laplacian = self._covert_mat2tensor(norm_laplacian).to(device)
         self.eye_matrix = self._covert_mat2tensor(eye_matrix).to(device)
@@ -70,10 +70,11 @@ class NGCF(nn.Module):
         values = torch.from_numpy(mat.data).float()
         return torch.sparse.FloatTensor(indices,values,mat.shape)
 
-    def forward(self,users, pos_items, neg_items):
+
+    def forward(self,users, pos_items, neg_items,use_dropout):
 
         # node dropout
-        if self.train:
+        if use_dropout:
             norm_laplacian = self._node_dropout(self.norm_laplacian)
         else:
             norm_laplacian = self.norm_laplacian
@@ -92,7 +93,7 @@ class NGCF(nn.Module):
         prev_embedding= torch.cat((self.embedding_user.weight,
                                     self.embedding_item.weight),dim=0)
 
-        # print(f'prev_embedding:{prev_embedding.shape}')
+        # print(f'0-th_prev_embedding:{prev_embedding.shape}')
 
         all_embedding=[prev_embedding]
 
@@ -103,7 +104,7 @@ class NGCF(nn.Module):
 
             # first_term = first_embedding * i-th layer of W_1
             first_term = torch.matmul(first_term,l1.weight)+l1.bias
-            # print(f'first_term:{first_term.shape}')
+            # print(f'{index+1}-th_first_term:{first_term.shape}')
 
             # second_term = laplacian * elementwise of previous embedding
             second_term = prev_embedding * prev_embedding
@@ -111,7 +112,7 @@ class NGCF(nn.Module):
 
             # second_term = second_embedding * i-th layer of W2
             second_term = torch.matmul(second_term,l2.weight)+l2.bias
-            # print(f'second_term:{second_term.shape}')
+            # print(f'{index+1}-th_second_term:{second_term.shape}')
 
             # prev_embedding = LeakyReLU(first_term + second_term)
             prev_embedding = nn.LeakyReLU(negative_slope=0.2)(first_term+second_term)
@@ -121,22 +122,22 @@ class NGCF(nn.Module):
 
             # L2 normalize
             prev_embedding = F.normalize(prev_embedding,p=2,dim=1)
-            # print(f'prev_embedding:{prev_embedding.shape}')
+            # print(f'{index+1}-th_prev_embedding:{prev_embedding.shape}')
 
             all_embedding+=[prev_embedding]
 
         all_embedding = torch.cat(all_embedding,1)
         # print(f'all_embedding:{all_embedding.shape}')
 
-        user_embeddings = all_embedding[:self.num_users,:]
+        self.user_embeddings = all_embedding[:self.num_users,:]
         # print(f'user_embeddings:{user_embeddings.shape}')
 
-        item_embeddings = all_embedding[self.num_users:,:]
+        self.item_embeddings = all_embedding[self.num_users:,:]
         # print(f'item_embeddings:{item_embeddings.shape}')
 
-        users_embed=user_embeddings[users,:]
-        pos_item_embeddings = item_embeddings[pos_items, :]
-        neg_item_embeddings = item_embeddings[neg_items, :]
+        users_embed=self.user_embeddings[users,:]
+        pos_item_embeddings = self.item_embeddings[pos_items, :]
+        neg_item_embeddings = self.item_embeddings[neg_items, :]
 
         # print(f'users_embed:{users_embed.shape}')
         # print(f'pos_item_embeddings:{pos_item_embeddings.shape}')

@@ -29,8 +29,8 @@ train_loader = DataLoader(train_set,
                           batch_size=256,
                           shuffle=True)
 test_loader = DataLoader(test_set,
-                         batch_size=256,
-                         shuffle=True)
+                         batch_size=20,
+                         shuffle=False)
 
 model = NGCF(norm_laplacian=norm_laplacian,
              eye_matrix= eye_matrix,
@@ -40,7 +40,6 @@ model = NGCF(norm_laplacian=norm_laplacian,
              device= device,
              node_dropout_ratio=0.1,
              mess_dropout=[0.1,0.1,0.1],
-             train=True,
              layer_size=3,
              )
 
@@ -54,9 +53,10 @@ if __name__ =='__main__' :
     train = Train(device=device,
                   epochs=10,
                   model=model,
-                  dataloader=train_loader,
+                  train_loader=train_loader,
+                  test_loader=test_loader,
                   optim=optimizer,
-                  criterion=criterion
+                  criterion=criterion,
                   )
     train.train()
     end = time.time()

@@ -89,9 +89,12 @@ class Download():
         :return: (pd.DataFrame,pd.DataFrame,pd.DataFrame)
         '''
         train_dataframe = self.df
-        test_dataframe = self.df.sample(frac=1).drop_duplicates(['userId'])
-        tmp_dataframe = pd.concat([train_dataframe, test_dataframe])
-        train_dataframe = tmp_dataframe.drop_duplicates(keep=False)
+        test_dataframe = None
+        for i in range(100):
+            tmp_dataframe = train_dataframe.sample(frac=1).drop_duplicates(['userId'])
+            test_dataframe = pd.concat([tmp_dataframe,test_dataframe])
+            tmp_dataframe2 = pd.concat([train_dataframe, tmp_dataframe])
+            train_dataframe = tmp_dataframe2.drop_duplicates(keep=False)
 
         # explicit feedback -> implicit feedback
         # ignore warnings
@@ -150,7 +153,7 @@ class MovieLens(Dataset):
 
     def _negative_sampling(self) :
         '''
-        sampling one positive feedback per four negative feedback
+        sampling one positive feedback per one negative feedback
         :return: dataframe
         '''
         df = self.df

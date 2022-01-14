@@ -1,21 +1,22 @@
 import torch
 
-import gc
+from evaluation import Evaluation
 class Train():
     def __init__(self,
-                 dataloader,
+                 train_loader,
                  model:torch.nn.Module,
                  device:torch.device,
                  criterion,
                  optim:torch.optim,
-                 epochs:int) -> object:
+                 epochs:int,
+                 test_loader) -> object:
         self.epochs =epochs
         self.device = device
         self.model = model
         self.criterion = criterion
         self.optimizer = optim
-        self.dataloader = dataloader
-
+        self.dataloader = train_loader
+        self.test_loader = test_loader
     def train(self):
         epochs = self.epochs
         device = self.device
@@ -31,7 +32,7 @@ class Train():
 
             for idx,(users,pos_items,neg_items) in enumerate(dataloader):
                 users,pos_items,neg_items = users.to(device),pos_items.to(device),neg_items.to(device)
-                user_embeddings, pos_item_embeddings, neg_item_embeddings= model(users,pos_items,neg_items)
+                user_embeddings, pos_item_embeddings, neg_item_embeddings= model(users,pos_items,neg_items,use_dropout=True)
 
                 optimizer.zero_grad()
                 cost  = criterion(user_embeddings,pos_item_embeddings,neg_item_embeddings)
@@ -39,7 +40,11 @@ class Train():
                 optimizer.step()
                 avg_cost+=cost
             avg_cost = loss/total_batch
-            print(f'Epoch: {(epoch + 1):04}, {criterion._get_name()}= {avg_cost:.9f}')
+            eval = Evaluation(test_dataloader=self.test_loader,
+                              model = model,
+                              topk=20)
+            NDCG = eval.get_metric()
+            print(f'Epoch: {(epoch + 1):04}, {criterion._get_name()}= {avg_cost:.9f}, NDCG:{NDCG:.4f}')
 
 
 
