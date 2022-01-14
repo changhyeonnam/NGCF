@@ -46,15 +46,21 @@ class Evaluation():
                                           torch.transpose(all_items_embeddings,0,1))
                 print(f'trained_matrix: {trained_matrix.shape}')
 
-                _, pred_indices = torch.topk(pos_item_embeddings, self.top_k)
+                pred_matrix = torch.matmul(user_embeddings,torch.transpose(pos_item_embeddings,0,1))
+
+                print(f'pred_matrix: {pred_matrix.shape}')
+                print(f'pred_matrix: {pred_matrix}')
+
+                _, pred_indices = torch.topk(pred_matrix[0], self.top_k)
 
                 recommends = torch.take(
-                    pos_item_embeddings, pred_indices).cpu().numpy().tolist()
-
-                _,gt_indices=torch.topk(trained_matrix[user_embeddings].sum(dim=1),self.top_k)
-
+                    pred_matrix[0], pred_indices).cpu().numpy().tolist()
+                
+                print(f'recommends:{len(recommends)}')
+                _,gt_indices=torch.topk(trained_matrix[user_embeddings[0]],self.top_k)
+                
                 ground_truth = torch.take(
                     trained_matrix[user_embeddings],gt_indices).cpu().numpy().tolist()
-
+                print(f'ground_truth:{len(ground_truth)}')
                 NDCG.append(self.Ndcg(gt_items=ground_truth,pred_items=recommends))
         return np.mean(NDCG)

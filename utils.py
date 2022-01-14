@@ -103,6 +103,8 @@ class Download():
         train_dataframe.loc[:, 'rating'] = 1
         test_dataframe.loc[:, 'rating'] = 1
 
+        test_dataframe = test_dataframe.sort_values(by=['userId'],axis=0)
+
         print(f"len(total): {len(self.df)}, len(train): {len(train_dataframe)}, len(test): {len(test_dataframe)}")
         return self.df, train_dataframe, test_dataframe,
 
