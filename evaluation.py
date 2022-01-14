@@ -19,8 +19,8 @@ class Evaluation():
         return np.sum(dcg)
 
     def Ndcg(self,gt_items, pred_items):
-        IDCG = dcg(gt_items)
-        DCG = dcg(pred_items)
+        IDCG = self.dcg(gt_items)
+        DCG = self.dcg(pred_items)
         return DCG/IDCG
 
     def get_metric(self):
@@ -30,37 +30,31 @@ class Evaluation():
         with torch.no_grad():
             for users,pos_items in self.dataloader:
                 users,pos_items = users.to(device),pos_items.to(device)
+
+                users=torch.flatten(users,start_dim=0)
+                pos_items=torch.flatten(pos_items,start_dim=0)
+
                 user_embeddings, pos_item_embeddings,_ = self.model(users=users,
                                                              pos_items=pos_items,
                                                              neg_items=[],
                                                              use_dropout=False)
 
-                print(f'user_embeddings: {user_embeddings.shape}')
-                print(f'pos_item_embeddings: {pos_item_embeddings.shape}')
 
                 all_user_embeddings, all_items_embeddings = self.model.user_embeddings,self.model.item_embeddings
-                print(f'all_user_embeddings: {all_user_embeddings.shape}')
-                print(f'all_items_embeddings: {all_items_embeddings.shape}')
 
                 trained_matrix = torch.matmul(all_user_embeddings,
                                           torch.transpose(all_items_embeddings,0,1))
-                print(f'trained_matrix: {trained_matrix.shape}')
 
                 pred_matrix = torch.matmul(user_embeddings,torch.transpose(pos_item_embeddings,0,1))
 
-                print(f'pred_matrix: {pred_matrix.shape}')
-                print(f'pred_matrix: {pred_matrix}')
 
                 _, pred_indices = torch.topk(pred_matrix[0], self.top_k)
-
                 recommends = torch.take(
                     pred_matrix[0], pred_indices).cpu().numpy().tolist()
-                
-                print(f'recommends:{len(recommends)}')
-                _,gt_indices=torch.topk(trained_matrix[user_embeddings[0]],self.top_k)
+
+                _,gt_indices=torch.topk(trained_matrix[users[0]],self.top_k)
                 
                 ground_truth = torch.take(
-                    trained_matrix[user_embeddings],gt_indices).cpu().numpy().tolist()
-                print(f'ground_truth:{len(ground_truth)}')
+                    trained_matrix[users[0]],gt_indices).cpu().numpy().tolist()
                 NDCG.append(self.Ndcg(gt_items=ground_truth,pred_items=recommends))
         return np.mean(NDCG)

@@ -104,7 +104,6 @@ class Download():
         test_dataframe.loc[:, 'rating'] = 1
 
         test_dataframe = test_dataframe.sort_values(by=['userId'],axis=0)
-
         print(f"len(total): {len(self.df)}, len(train): {len(train_dataframe)}, len(test): {len(test_dataframe)}")
         return self.df, train_dataframe, test_dataframe,
 
@@ -125,7 +124,8 @@ class MovieLens(Dataset):
         self.df = df
         self.total_df = total_df
         self.train = train
-        self.users, self.items = self._negative_sampling()
+        if self.train:
+            self.users, self.items = self._negative_sampling()
 
 
 
@@ -134,7 +134,7 @@ class MovieLens(Dataset):
         get lenght of data
         :return: len(data)
         '''
-        return len(self.users)
+        return len(self.df)
 
 
     def __getitem__(self, index):
@@ -150,7 +150,9 @@ class MovieLens(Dataset):
         if self.train:
             return self.users[index], self.items[index][0], self.items[index][1]
         else:
-            return self.users[index], self.items[index][0]
+            user = torch.LongTensor([self.df.userId.values[index]])
+            item = torch.LongTensor([self.df.movieId.values[index]])
+            return user,item
 
 
     def _negative_sampling(self) :

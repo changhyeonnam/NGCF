@@ -1,8 +1,9 @@
 import torch
-import time
+from datetime import datetime
 from utils import Download
 from utils import MovieLens
 from laplacian_mat import Laplacian
+from evaluation import Evaluation
 from torch.utils.data import DataLoader
 from model.NGCF import NGCF
 from bpr_loss import BPR_Loss
@@ -30,7 +31,6 @@ train_loader = DataLoader(train_set,
                           shuffle=True)
 test_loader = DataLoader(test_set,
                          batch_size=10,
-
                          shuffle=False)
 
 model = NGCF(norm_laplacian=norm_laplacian,
@@ -48,9 +48,11 @@ model.to(device)
 criterion = BPR_Loss(batch_size=256,decay_ratio=1e-5)
 optimizer = torch.optim.Adam(model.parameters(),lr=1e-3)
 
-if __name__ =='__main__' :
-    start = time.time()
+NDCG = eval.get_metric()
 
+if __name__ =='__main__' :
+    start_time = datetime.now()
+    print('------------train start------------')
     train = Train(device=device,
                   epochs=10,
                   model=model,
@@ -60,5 +62,12 @@ if __name__ =='__main__' :
                   criterion=criterion,
                   )
     train.train()
-    end = time.time()
-    print(f'training time:{end-start:.5f}')
+    print('------------train end------------')
+
+    eval = Evaluation(test_dataloader=test_loader,
+                      model=model,
+                      top_k=5,
+                      device=device)
+
+    end_time = datetime.now()
+    print('Duration: {}'.format(end_time - start_time))
