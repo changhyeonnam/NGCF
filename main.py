@@ -15,7 +15,7 @@ gc.collect()
 torch.cuda.empty_cache()
 
 root_path = 'dataset'
-dataset = Download(root=root_path,file_size='100k',download=False)
+dataset = Download(root=root_path,file_size='1m',download=False)
 total_df , train_df, test_df = dataset.split_train_test()
 
 num_user, num_item = total_df['userId'].max()+1, total_df['movieId'].max()+1
