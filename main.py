@@ -29,10 +29,14 @@ eye_matrix,norm_laplacian  = matrix_generator.create_norm_laplacian()
 train_loader = DataLoader(train_set,
                           batch_size=256,
                           shuffle=True)
-
+print(len(train_set))
+print(len(test_set))
 test_loader = DataLoader(test_set,
                          batch_size=100,
-                         shuffle=False)
+                         shuffle=False,
+                         drop_last=True
+                         )
+print(len(test_loader))
 
 model = NGCF(norm_laplacian=norm_laplacian,
              eye_matrix= eye_matrix,

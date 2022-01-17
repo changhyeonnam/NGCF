@@ -134,7 +134,7 @@ class MovieLens(Dataset):
         get lenght of data
         :return: len(data)
         '''
-        return len(self.df)
+        return len(self.users)
 
 
     def __getitem__(self, index):
@@ -150,7 +150,7 @@ class MovieLens(Dataset):
         if self.train:
             return self.users[index], self.items[index][0], self.items[index][1]
         else:
-            return self.users[index], self.items[index]
+            return self.users[index], self.items[index][0]
 
 
     def _negative_sampling(self) :
