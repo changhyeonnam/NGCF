@@ -11,12 +11,9 @@ from train import Train
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'device: {device}')
 
-import gc
-gc.collect()
-torch.cuda.empty_cache()
 
 root_path = 'dataset'
-dataset = Download(root=root_path,file_size='1m',download=False)
+dataset = Download(root=root_path,file_size='100k',download=False)
 total_df , train_df, test_df = dataset.split_train_test()
 
 num_user, num_item = total_df['userId'].max()+1, total_df['movieId'].max()+1
@@ -29,14 +26,12 @@ eye_matrix,norm_laplacian  = matrix_generator.create_norm_laplacian()
 train_loader = DataLoader(train_set,
                           batch_size=256,
                           shuffle=True)
-print(len(train_set))
-print(len(test_set))
+
 test_loader = DataLoader(test_set,
                          batch_size=100,
                          shuffle=False,
                          drop_last=True
                          )
-print(len(test_loader))
 
 model = NGCF(norm_laplacian=norm_laplacian,
              eye_matrix= eye_matrix,

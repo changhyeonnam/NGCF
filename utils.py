@@ -150,7 +150,7 @@ class MovieLens(Dataset):
         if self.train:
             return self.users[index], self.items[index][0], self.items[index][1]
         else:
-            return self.users[index], self.items[index][0]
+            return self.users[index], self.items[index]
 
 
     def _negative_sampling(self) :

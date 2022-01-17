@@ -34,10 +34,12 @@ class Evaluation():
 
     def get_metric(self):
         NDCG=[]
+        HR=[]
         device = self.device
         self.model.eval()
         with torch.no_grad():
             for users,pos_items in self.dataloader:
+
                 users,pos_items = users.to(device),pos_items.to(device)
 
                 user_embeddings, pos_item_embeddings,_ = self.model(users=users,
@@ -53,8 +55,6 @@ class Evaluation():
 
                 pred_matrix = torch.matmul(user_embeddings,torch.transpose(pos_item_embeddings,0,1))
 
-
-
                 _, pred_indices = torch.topk(pred_matrix[0], self.top_k)
 
                 recommends = torch.take(
@@ -64,8 +64,7 @@ class Evaluation():
                 #
                 # ground_truth = torch.take(
                 #     trained_matrix[users[0]],gt_indices).cpu().numpy().tolist()
-
-                gt_item = pos_items[0].item()
+                # gt_item = pos_items[0].item()
                 HR.append(self.hit(gt_item=gt_item,pred_items=recommends))
                 NDCG.append(self.Ndcg(gt_item=gt_item,pred_items=recommends))
                 
