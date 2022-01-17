@@ -7,13 +7,14 @@ class Evaluation():
                  test_dataloader,
                  model,
                  device,
-                 top_k:int=20,
+                 all_item_list,
+                 top_k:int=10,
                  ):
         self.dataloader = test_dataloader
         self.model = model
         self.top_k = top_k
         self.device = device
-
+        self.all_item_list = all_item_list
     # def dcg(self,gt_items):
     #     output = np.sum(gt_items)/np.log2(np.arange(2,len(gt_items)+1))
     #     return output
@@ -42,28 +43,29 @@ class Evaluation():
 
                 users,pos_items = users.to(device),pos_items.to(device)
 
-                user_embeddings, pos_item_embeddings,_ = self.model(users=users,
-                                                             pos_items=pos_items,
-                                                             neg_items=[],
-                                                             use_dropout=False)
+                # user_embeddings, pos_item_embeddings,_ = self.model(users=users,
+                #                                              pos_items=pos_items,
+                #                                              neg_items=[],
+                #                                              use_dropout=False)
 
 
-                # all_user_embeddings, all_items_embeddings = self.model.user_embeddings,self.model.item_embeddings
+                all_user_embeddings, all_items_embeddings = self.model.user_embeddings,self.model.item_embeddings
+
+                trained_matrix = torch.matmul(all_user_embeddings,
+                                          torch.transpose(all_items_embeddings,0,1))
+
+                # pred_matrix = torch.matmul(user_embeddings,torch.transpose(pos_item_embeddings,0,1))
+
+                # _, pred_indices = torch.topk(pred_matrix[0], self.top_k)
+
+                # recommends = torch.take(
+                #     pred_matrix[0], pred_indices).cpu().numpy().tolist()
                 #
-                # trained_matrix = torch.matmul(all_user_embeddings,
-                #                           torch.transpose(all_items_embeddings,0,1))
 
-                pred_matrix = torch.matmul(user_embeddings,torch.transpose(pos_item_embeddings,0,1))
-
-                _, pred_indices = torch.topk(pred_matrix[0], self.top_k)
+                _,gt_indices=torch.topk(trained_matrix[users[0]],self.top_k)
 
                 recommends = torch.take(
-                    pred_matrix[0], pred_indices).cpu().numpy().tolist()
-
-                # _,gt_indices=torch.topk(trained_matrix[users[0]],self.top_k)
-                #
-                # ground_truth = torch.take(
-                #     trained_matrix[users[0]],gt_indices).cpu().numpy().tolist()
+                    self.all_item_list,gt_indices-1).cpu().numpy().tolist()
                 # gt_item = pos_items[0].item()
                 HR.append(self.hit(gt_item=gt_item,pred_items=recommends))
                 NDCG.append(self.Ndcg(gt_item=gt_item,pred_items=recommends))

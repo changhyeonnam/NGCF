@@ -8,23 +8,24 @@ from torch.utils.data import DataLoader
 from model.NGCF import NGCF
 from bpr_loss import BPR_Loss
 from train import Train
+from parser import args
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'device: {device}')
 
 
 root_path = 'dataset'
-dataset = Download(root=root_path,file_size='100k',download=False)
+dataset = Download(root=root_path,file_size=args.file_size,download=False)
 total_df , train_df, test_df = dataset.split_train_test()
 
 num_user, num_item = total_df['userId'].max()+1, total_df['movieId'].max()+1
 train_set = MovieLens(df=train_df,total_df=total_df,train=True,ng_ratio=1)
-test_set = MovieLens(df=test_df,total_df=total_df,train=False,ng_ratio=99)
+test_set = MovieLens(df=test_df,total_df=total_df,train=False,ng_ratio=0)
 
 matrix_generator = Laplacian(df=total_df)
 eye_matrix,norm_laplacian  = matrix_generator.create_norm_laplacian()
 
 train_loader = DataLoader(train_set,
-                          batch_size=256,
+                          batch_size=args.batch,
                           shuffle=True)
 
 test_loader = DataLoader(test_set,
@@ -53,19 +54,21 @@ if __name__ =='__main__' :
     start_time = datetime.now()
     print('------------train start------------')
     train = Train(device=device,
-                  epochs=30,
+                  epochs=args.epoch,
                   model=model,
                   train_loader=train_loader,
                   test_loader=test_loader,
                   optim=optimizer,
                   criterion=criterion,
+                  top_k=args.top_k,
+                  total_df = total_df
                   )
     train.train()
     print('------------train end------------')
 
     eval = Evaluation(test_dataloader=test_loader,
                       model=model,
-                      top_k=20,
+                      top_k=args.top_k,
                       device=device)
 
     end_time = datetime.now()

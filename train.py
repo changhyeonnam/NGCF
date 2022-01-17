@@ -9,7 +9,9 @@ class Train():
                  criterion,
                  optim:torch.optim,
                  epochs:int,
-                 test_loader) -> object:
+                 test_loader,
+                 total_df,
+                 top_k:int) -> object:
         self.epochs =epochs
         self.device = device
         self.model = model
@@ -17,7 +19,8 @@ class Train():
         self.optimizer = optim
         self.dataloader = train_loader
         self.test_loader = test_loader
-
+        self.top_k = top_k
+        self.all_item_list = total_df['movieId'].unqiue()
     def train(self):
         epochs = self.epochs
         model = self.model
@@ -25,7 +28,7 @@ class Train():
         optimizer  = self.optimizer
         dataloader = self.dataloader
         device = self.device
-        top_k = 20
+        top_k = self.top_k
         for epoch in range(epochs):
             avg_cost = 0
             total_batch = len(dataloader)
@@ -43,7 +46,8 @@ class Train():
             eval = Evaluation(test_dataloader=self.test_loader,
                               model = model,
                               top_k=top_k,
-                              device=device)
+                              device=device,
+                              all_item_list=self.all_item_list)
             HR,NDCG = eval.get_metric()
             print(f'Epoch: {(epoch + 1):04}, {criterion._get_name()}= {avg_cost:.9f}, NDCG@{top_k}:{NDCG:.4f},HR@{top_k}:{HR:.4f}')
 

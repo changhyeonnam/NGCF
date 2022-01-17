@@ -89,12 +89,9 @@ class Download():
         :return: (pd.DataFrame,pd.DataFrame,pd.DataFrame)
         '''
         train_dataframe = self.df
-        test_dataframe = None
-        for i in range(1):
-            tmp_dataframe = train_dataframe.sample(frac=1).drop_duplicates(['userId'])
-            test_dataframe = pd.concat([tmp_dataframe,test_dataframe])
-            tmp_dataframe2 = pd.concat([train_dataframe, tmp_dataframe])
-            train_dataframe = tmp_dataframe2.drop_duplicates(keep=False)
+        test_dataframe = train_dataframe.sample(frac=1).drop_duplicates(['userId'])
+        train_dataframe = pd.concat([train_dataframe, test_dataframe])
+        train_dataframe = train_dataframe.drop_duplicates(keep=False)
 
         # explicit feedback -> implicit feedback
         # ignore warnings
