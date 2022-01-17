@@ -133,7 +133,7 @@ class NGCF(nn.Module):
         # print(f'user_embeddings:{user_embeddings.shape}')
 
         self.item_embeddings = all_embedding[self.num_users:,:]
-        # print(f'item_embeddings:{item_embeddings.shape}')
+        # print(f'item_embeddings:{self.item_embeddings.shape}')
 
         users_embed=self.user_embeddings[users,:]
         pos_item_embeddings = self.item_embeddings[pos_items, :]
