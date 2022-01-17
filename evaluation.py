@@ -54,6 +54,7 @@ class Evaluation():
                 pred_matrix = torch.matmul(user_embeddings,torch.transpose(pos_item_embeddings,0,1))
 
 
+
                 _, pred_indices = torch.topk(pred_matrix[0], self.top_k)
 
                 recommends = torch.take(
