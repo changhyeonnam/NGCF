@@ -17,7 +17,6 @@ class BPR_Loss(nn.Module):
 
         log_prob = nn.LogSigmoid()(pos_scores - neg_scores).sum()
 
-        # cul regularizer
         regularization = self.decay*(users.norm(dim=1).pow(2).sum()
                                      +pos_items.norm(dim=1).pow(2).sum()
                                      +neg_items.norm(dim=1).pow(2).sum())
