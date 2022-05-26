@@ -6,9 +6,9 @@ This repository is about Neural Graph  Collaborative Filtering with MovieLens in
 
 ## Result
 
-I measured NDCG and Hit ratio while changing the number of embedding layers for MovieLens dataset 100k and 1M.
+I measured NDCG@10 and HitRatio@10 while changing the number of embedding layers for MovieLens dataset 100k and 1M.
 
-| dataset | BestNDCG@10 | HR@10 | # layers | epoch | batch size |
+| dataset | Best NDCG@10 | HR@10 | # layers | epoch | batch size |
 | --- | --- | --- | --- | --- | --- |
 | MovieLens100k | 0.5784 | 0.8164 | 3 | 20 | 256 |
 | MovieLens100k | 0.5640 | :0.8262 | 4 | 20 | 256 |
