@@ -12,7 +12,6 @@ from parser import args
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'device: {device}')
 
-
 root_path = 'dataset'
 dataset = Download(root=root_path,file_size=args.file_size,download=False)
 total_df , train_df, test_df = dataset.split_train_test()
