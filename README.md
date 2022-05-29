@@ -11,7 +11,7 @@ I measured NDCG@10 and HitRatio@10 while changing the number of embedding layers
 | dataset | Best NDCG@10 | HR@10 | # layers | epoch | batch size |
 | --- | --- | --- | --- | --- | --- |
 | MovieLens100k | 0.5784 | 0.8164 | 3 | 20 | 256 |
-| MovieLens100k | 0.5640 | :0.8262 | 4 | 20 | 256 |
+| MovieLens100k | 0.5640 | 0.8262 | 4 | 20 | 256 |
 | MovieLens100k | 0.5546 | 0.8377 | 5 | 20 | 256 |
 | MovieLens1m | 0.4964 | 0.7568 | 3 | 20 | 256 |
 | MovieLens1m | 0.4922 | 0.7614 | 4 | 20 | 256 |
